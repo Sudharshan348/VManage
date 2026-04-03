@@ -1,9 +1,9 @@
 import { getCurrentStudentProfile } from "@/lib/auth";
 import connectDb from "@/lib/db/mongoose";
-import { MaintenanceTicket } from "@/lib/models/issue.model";
 import { ApiError } from "@/lib/util/apierror";
 import { asyncHandler } from "@/lib/util/apihandler";
 import { ApiResponse } from "@/lib/util/apiresponse";
+import { TicketService } from "@/lib/services/ticket";
 
 const allowedCategories = new Set([
   "plumbing",
@@ -45,14 +45,13 @@ export const POST = asyncHandler(async (req: Request) => {
     throw new ApiError(400, "Invalid priority");
   }
 
-  const ticket = await MaintenanceTicket.create({
-    studentId: profile.student._id,
+  const ticket = await TicketService.raiseTicket({
     roomId: profile.student.roomId,
     title,
     description,
     category,
     priority,
-  });
+  }, String(profile.student._id));
 
   return Response.json(
     new ApiResponse(201, ticket, "Issue raised successfully"),
