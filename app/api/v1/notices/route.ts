@@ -39,3 +39,46 @@ export const POST = asyncHandler(async (req: Request) => {
     { status: 201 }
   );
 });
+
+export const GET = asyncHandler(async (req: Request) => {
+  await connectDb();
+  const session = await getSessionPayload();
+  if (!session) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  const now = new Date();
+  const { searchParams } = new URL(req.url);
+  const showExpired = searchParams.get("expired"); 
+
+  let query: any = {};
+
+  if (session.role === "student") {
+    query = {
+      $or: [
+        { expiresAt: { $exists: false } },
+        { expiresAt: { $gt: now } },
+      ],
+    };
+  } else if (session.role === "admin" || session.role === "warden") {
+    if (showExpired !== "true") {
+      query = {
+        $or: [
+          { expiresAt: { $exists: false } },
+          { expiresAt: { $gt: now } },
+        ],
+      };
+    }
+  } else {
+    throw new ApiError(403, "Invalid role");
+  }
+
+  const notices = await Notice.find(query)
+    .sort({ createdAt: -1 })
+    .select("title content category createdAt expiresAt postedBy");
+
+  return Response.json(
+    new ApiResponse(200, notices, "Notices fetched successfully"),
+    { status: 200 }
+  );
+});
