@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, CallbackWithoutResultAndOptionalError } from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 
 export type UserRole = "super_admin" | "warden" | "student";

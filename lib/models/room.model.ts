@@ -1,7 +1,7 @@
 import mongoose, { Document, Model } from "mongoose";
 
 export type RoomStatus = "available" | "full" | "maintenance";
-export type RoomType = "single" | "double" | "triple" | "dormitory";
+export type RoomType = "two" | "three" | "four" | "six" ;
 
 export interface IRoom extends Document {
   roomNumber: string;
@@ -22,10 +22,10 @@ const roomSchema = new mongoose.Schema<IRoom>(
     floor: { type: Number, required: true, min: 0 },
     type: {
       type: String,
-      enum: ["single", "double", "triple", "dormitory"],
+      enum: ["two","three","four","six"],
       required: true,
     },
-    capacity: { type: Number, required: true, min: 1 },
+    capacity: { type: Number, required: true, min: 2 },
     currentOccupancy: { type: Number, default: 0, min: 0 },
     status: {
       type: String,
