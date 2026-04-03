@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AlertTriangle, LogIn, ShieldCheck, UserPlus } from "lucide-react";
+import { LogIn, ShieldCheck, UserPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,6 @@ const accentStyles = {
 const navItems = [
   { href: "/signup", label: "Student signup", icon: UserPlus },
   { href: "/login", label: "Sign in", icon: LogIn },
-  { href: "/issues", label: "Raise issue", icon: AlertTriangle },
 ];
 
 export function PortalShell({

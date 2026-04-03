@@ -14,7 +14,7 @@ import type { StudentSignupInput } from "@/lib/validation/student";
 
 type SignupResponse = {
   message?: string;
-  errors?: Record<string, string>;
+  errors?: Record<string, string> | Array<Record<string, string>>;
 };
 
 const initialForm: StudentSignupInput = {
@@ -62,7 +62,10 @@ export function AuthSignupForm() {
       const result = (await response.json()) as SignupResponse;
 
       if (!response.ok) {
-        setErrors(result.errors || {});
+        const fieldErrors = Array.isArray(result.errors)
+          ? (result.errors[0] ?? {})
+          : (result.errors ?? {});
+        setErrors(fieldErrors);
         setMessage(result.message || "Unable to create account");
         return;
       }

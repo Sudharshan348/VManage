@@ -12,6 +12,7 @@ type LoginResponse = {
     };
   };
   message?: string;
+  errors?: Record<string, string> | Array<Record<string, string>>;
 };
 
 export function AuthLoginForm() {
@@ -20,12 +21,14 @@ export function AuthLoginForm() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setError("");
+    setFieldErrors({});
 
     try {
       const response = await fetch("/api/v1/auth/login", {
@@ -43,6 +46,10 @@ export function AuthLoginForm() {
       const result = (await response.json()) as LoginResponse;
 
       if (!response.ok) {
+        const nextFieldErrors = Array.isArray(result.errors)
+          ? (result.errors[0] ?? {})
+          : (result.errors ?? {});
+        setFieldErrors(nextFieldErrors);
         setError(result.message || "Unable to sign in");
         return;
       }
@@ -70,6 +77,9 @@ export function AuthLoginForm() {
           autoComplete="username"
           required
         />
+        {fieldErrors.identifier ? (
+          <p className="text-xs text-red-600">{fieldErrors.identifier}</p>
+        ) : null}
       </Field>
 
       <Field label="Password">
@@ -81,6 +91,9 @@ export function AuthLoginForm() {
           autoComplete="current-password"
           required
         />
+        {fieldErrors.password ? (
+          <p className="text-xs text-red-600">{fieldErrors.password}</p>
+        ) : null}
       </Field>
 
       <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">

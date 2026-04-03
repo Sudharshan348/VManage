@@ -4,10 +4,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Bell,
+  Bot,
   ClipboardList,
   Home,
   LogOut,
   Hotel,
+  Cpu,
+  ScanSearch,
   TriangleAlert,
   UserRound,
   Users,
@@ -17,15 +20,19 @@ import { cn } from "@/lib/utils";
 
 const navConfig = {
   student: [
-    { href: "/student", label: "Profile", icon: UserRound },
-    { href: "/issues", label: "Raise issue", icon: TriangleAlert },
+    { key: "student-profile", href: "/student", label: "Profile", icon: UserRound },
+    { key: "student-issues", href: "/issues", label: "Raise issue", icon: TriangleAlert },
+    { key: "student-chat", href: "/chat", label: "AI chat", icon: Bot },
   ],
   admin: [
-    { href: "/admin", label: "Overview", icon: Home },
-    { href: "/admin/room", label: "Rooms", icon: Hotel },
-    { href: "/admin", label: "Post notice", icon: Bell },
-    { href: "/admin", label: "Current complaints", icon: ClipboardList },
-    { href: "/admin", label: "Maintenance issues", icon: Users },
+    { key: "admin-overview", href: "/admin", label: "Overview", icon: Home },
+    { key: "admin-rooms", href: "/admin/room", label: "Rooms", icon: Hotel },
+    { key: "admin-maintenance-ai", href: "/admin/maintenance", label: "Maintenance AI", icon: Cpu },
+    { key: "admin-roommates", href: "/admin/roommates", label: "Roommate match", icon: ScanSearch },
+    { key: "admin-chat", href: "/chat", label: "AI chat", icon: Bot },
+    { key: "admin-notices", href: "/admin", label: "Post notice", icon: Bell },
+    { key: "admin-complaints", href: "/admin", label: "Current complaints", icon: ClipboardList },
+    { key: "admin-maintenance", href: "/admin", label: "Maintenance issues", icon: Users },
   ],
 } as const;
 
@@ -103,7 +110,7 @@ export function DashboardShell({
 
               return (
                 <Link
-                  key={item.href}
+                  key={item.key}
                   href={item.href}
                   className={cn(
                     "flex items-center gap-3 rounded-2xl border border-white/10 px-4 py-3 text-sm font-medium transition",

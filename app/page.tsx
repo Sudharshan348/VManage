@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, LogIn, MessageSquareWarning, UserPlus } from "lucide-react";
+import { ArrowRight, LogIn, UserPlus } from "lucide-react";
 
 const entryCards = [
   {
@@ -13,12 +13,6 @@ const entryCards = [
     title: "Sign in",
     icon: LogIn,
     tint: "bg-red-50 text-red-700",
-  },
-  {
-    href: "/issues",
-    title: "Raise issue",
-    icon: MessageSquareWarning,
-    tint: "bg-emerald-50 text-emerald-700",
   },
 ];
 

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
+import { DashboardShell, Panel } from "@/components/dashboard-shell";
 import { IssueForm } from "@/components/issue-form";
-import { PortalShell, SectionCard } from "@/components/v1-portal";
 import { getCurrentStudentProfile } from "@/lib/auth";
 
 export default async function IssuesPage() {
@@ -16,15 +16,15 @@ export default async function IssuesPage() {
   }
 
   return (
-    <PortalShell title="Raise issue" eyebrow="Support" accent="green">
-      <SectionCard title="Submit ticket" subtitle="Stored against the maintenance schema">
+    <DashboardShell title="Student dashboard" role="student" userName={profile.user.name}>
+      <Panel title="Raise issue">
         <IssueForm
           studentName={profile.user.name}
           rollNo={profile.student.rollNo}
           phone={profile.student.phone}
           roomAssigned={Boolean(profile.student.roomId)}
         />
-      </SectionCard>
-    </PortalShell>
+      </Panel>
+    </DashboardShell>
   );
 }

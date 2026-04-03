@@ -5,22 +5,9 @@ import { BedDouble, Building2, Filter, Hammer, TriangleAlert } from "lucide-reac
 
 import { DashboardCard, Panel } from "@/components/dashboard-shell";
 import { Select } from "@/components/v1-portal";
+import type { RoomDashboardItem } from "@/lib/rooms";
 import { cn } from "@/lib/utils";
-
-type RoomStatus = "available" | "full" | "maintenance";
-type RoomType = "two" | "three" | "four" | "six";
-
-export type RoomDashboardItem = {
-  _id: string;
-  roomNumber: string;
-  block: string;
-  floor: number;
-  type: RoomType;
-  capacity: number;
-  currentOccupancy: number;
-  status: RoomStatus;
-  amenities: string[];
-};
+import type { RoomType } from "@/lib/rooms";
 
 type FilterMode = "all" | "empty" | "partial" | "full";
 
@@ -208,20 +195,4 @@ export function RoomDashboard({ rooms }: { rooms: RoomDashboardItem[] }) {
       </Panel>
     </div>
   );
-}
-
-export function normalizeRoomItem(room: RoomDashboardItem | Record<string, unknown>): RoomDashboardItem {
-  return {
-    _id: String(room._id ?? ""),
-    roomNumber: String(room.roomNumber ?? ""),
-    block: String(room.block ?? ""),
-    floor: Number(room.floor ?? 0),
-    type: String(room.type ?? "two") as RoomType,
-    capacity: Number(room.capacity ?? 0),
-    currentOccupancy: Number(room.currentOccupancy ?? 0),
-    status: String(room.status ?? "available") as RoomStatus,
-    amenities: Array.isArray(room.amenities)
-      ? room.amenities.map((item) => String(item))
-      : [],
-  };
 }
