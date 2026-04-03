@@ -1,24 +1,44 @@
 import connectDb from "@/lib/db/mongoose"
+import { Student } from "@/lib/models/student.model"
 import { User } from "@/lib/models/user.model"
 import { ApiError } from "@/lib/util/apierror"
 import { ApiResponse } from "@/lib/util/apiresponse"
 import { asyncHandler } from "@/lib/util/apihandler"
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
+import { validateLoginInput } from "@/lib/validation/student";
 
 export const POST = asyncHandler(async (req: Request) => {
 
   await connectDb()
   const body = await req.json()
-  const { email, password } = body
+  const parsed = validateLoginInput(body)
 
-  if (!email || !password) {
-    throw new ApiError(400, "Email and password are required")
+  if (!parsed.success) {
+    return Response.json(
+      {
+        ...new ApiResponse(400, null, parsed.message),
+        errors: parsed.fieldErrors,
+      },
+      { status: 400 }
+    )
   }
 
-  const user = await User.findOne({ email })
+  const { identifier, password } = parsed.data
+  let user = await User.findOne({ email: identifier })
+
   if (!user) {
-    throw new ApiError(400, "User not found")
+    const student = await Student.findOne({ rollNo: identifier.toUpperCase() })
+      .select("email")
+      .lean()
+
+    if (student?.email) {
+      user = await User.findOne({ email: student.email.toLowerCase() })
+    }
+  }
+
+  if (!user) {
+    throw new ApiError(404, "User not found")
   }
 
   const checkpwd = await user.comparePassword(password)
@@ -42,6 +62,6 @@ export const POST = asyncHandler(async (req: Request) => {
   })
 
   return Response.json(
-    new ApiResponse(200,{ user: loggedInuser },"User has been logged In"),{ status: 200 }
+    new ApiResponse(200,{ user: loggedInuser },"User has been logged in"),{ status: 200 }
   )
 })

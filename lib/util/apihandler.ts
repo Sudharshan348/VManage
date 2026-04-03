@@ -12,6 +12,9 @@ export const asyncHandler = (handler: (req: Request) => Promise<Response>) => {
           { status: error.statusCode }
         )
       }
+
+      console.error("Unhandled API error:", error)
+
       return Response.json(
         new ApiResponse(500, null, "Internal server error"),
         { status: 500 }

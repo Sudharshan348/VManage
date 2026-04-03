@@ -1,5 +1,6 @@
 import mongoose, { Document, Model } from "mongoose";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
+import { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 
 export type UserRole = "admin" | "warden" | "student";
 
@@ -31,13 +32,48 @@ const userSchema = new mongoose.Schema<IUser>(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (this: IUser) {
-  if (!this.isModified("password")) return;
-  this.password = await bcrypt.hash(this.password, 12);
+userSchema.pre("save", function () {
+  if (!this.isModified("password")) {
+    return;
+  }
+
+  if (typeof this.password === "string" && this.password.includes(":")) {
+    return;
+  }
+
+  const salt = randomBytes(16).toString("hex");
+  const hashedPassword = scryptSync(this.password, salt, 64).toString("hex");
+  this.password = `${salt}:${hashedPassword}`;
 });
 
 userSchema.methods.comparePassword = async function (candidate: string) {
-  return bcrypt.compare(candidate, this.password);
+  if (!this.password || typeof this.password !== "string") {
+    return false;
+  }
+
+  if (this.password.includes(":")) {
+    const [salt, storedHash] = this.password.split(":");
+
+    if (!salt || !storedHash) {
+      return false;
+    }
+
+    const candidateHash = scryptSync(candidate, salt, 64).toString("hex");
+    const storedBuffer = Buffer.from(storedHash, "hex");
+    const candidateBuffer = Buffer.from(candidateHash, "hex");
+
+    if (storedBuffer.length !== candidateBuffer.length) {
+      return false;
+    }
+
+    return timingSafeEqual(storedBuffer, candidateBuffer);
+  }
+
+  if (this.password.startsWith("$2")) {
+    return bcrypt.compare(candidate, this.password);
+  }
+
+  return false;
 };
 
 export const User: Model<IUser> =

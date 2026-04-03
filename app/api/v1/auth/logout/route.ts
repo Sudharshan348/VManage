@@ -2,7 +2,7 @@ import { ApiResponse } from "@/lib/util/apiresponse"
 import { asyncHandler } from "@/lib/util/apihandler"
 import { cookies } from "next/headers"
 
-export const POST = asyncHandler(async (req: Request) => {
+export const POST = asyncHandler(async () => {
   const cookieStore = await cookies()
   cookieStore.delete("auth-token")
 
