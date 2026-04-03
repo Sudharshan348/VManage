@@ -1,5 +1,5 @@
 import mongoose, { Document, Model } from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 
 export type UserRole = "admin" | "warden" | "student";
