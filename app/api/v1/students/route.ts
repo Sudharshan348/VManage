@@ -1,35 +1,41 @@
-import { getSessionPayload } from "@/lib/auth";
 import connectDb from "@/lib/db/mongoose";
-import { Student } from "@/lib/models/student.model";
-import { User } from "@/lib/models/user.model";
-import { ApiError } from "@/lib/util/apierror";
 import { asyncHandler } from "@/lib/util/apihandler";
 import { ApiResponse } from "@/lib/util/apiresponse";
+import { ApiError } from "@/lib/util/apierror";
+import { validateStudentSignup } from "@/lib/validation/student";
+import { StudentService } from "@/lib/services/student";
 
-export const GET = asyncHandler(async () => {
+export const POST = asyncHandler(async (req: Request) => {
   await connectDb();
-
-  const session = await getSessionPayload();
-  if (!session) {
-    throw new ApiError(401, "Unauthorized");
+  const body = await req.json();
+  const validation = validateStudentSignup(body);
+  
+  if (!validation.success) {
+    throw new ApiError(400, validation.message, [validation.fieldErrors]);
   }
+  const profile = await StudentService.createStudentProfile(validation.data);
+  return Response.json(
+    new ApiResponse(201, profile, "Student profile created successfully"),
+    { status: 201 }
+  );
+});
 
-  if (session.role === "student") {
-    const user = await User.findById(session._id).select("studentId email").lean();
-    const student = user?.studentId
-      ? await Student.findById(user.studentId).lean()
-      : await Student.findOne({ email: user?.email }).lean();
-
+export const GET = asyncHandler(async (req: Request) => {
+  await connectDb();
+  
+  const url = new URL(req.url);
+  const identifier = url.searchParams.get("id");
+  
+  if (identifier) {
+    const profile = await StudentService.getStudentProfile(identifier);
     return Response.json(
-      new ApiResponse(200, student, "Student fetched successfully"),
+      new ApiResponse(200, profile, "Student profile fetched successfully"),
       { status: 200 }
     );
   }
-
-  const students = await Student.find().sort({ createdAt: -1 }).lean();
-
+  const allStudents = await StudentService.getAllStudents();
   return Response.json(
-    new ApiResponse(200, students, "Students fetched successfully"),
+    new ApiResponse(200, allStudents, "All students fetched successfully"),
     { status: 200 }
   );
 });
