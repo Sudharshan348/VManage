@@ -64,7 +64,7 @@ export const POST = asyncHandler(async (req: Request) => {
     };
   });
 
-  const pythonApiUrl = process.env.PYTHON_ML_API_URL || "http://localhost:8000";
+  const pythonApiUrl = process.env.PYTHON_ML_API1_URL || "http://localhost:8000";
   const response = await fetch(`${pythonApiUrl}/calculate-roommates`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

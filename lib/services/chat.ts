@@ -2,7 +2,7 @@ import { ApiError } from "@/lib/util/apierror";
 
 export class ChatService {
   static async askQuestion(question: string) {
-    const pythonApiUrl = process.env.PYTHON_ML_API_URL || "http://localhost:8000";
+    const pythonApiUrl = process.env.PYTHON_ML_API3_URL || "http://localhost:8000";
     
     try {
       const response = await fetch(`${pythonApiUrl}/api/ai/chat`, {

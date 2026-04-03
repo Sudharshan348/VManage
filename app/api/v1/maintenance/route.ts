@@ -40,7 +40,7 @@ export const POST = asyncHandler(async (req: Request) => {
     floor_level: asset.floor,
   };
 
-  const pythonApiUrl = process.env.PYTHON_ML_API_URL || "http://localhost:8000";
+  const pythonApiUrl = process.env.PYTHON_ML_API2_URL || "http://localhost:8000";
   const response = await fetch(`${pythonApiUrl}/predict-failure`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
