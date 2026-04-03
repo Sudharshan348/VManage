@@ -4,6 +4,7 @@ import { ApiResponse } from "@/lib/util/apiresponse";
 import { ApiError } from "@/lib/util/apierror";
 import { validateStudentSignup } from "@/lib/validation/student";
 import { StudentService } from "@/lib/services/student";
+import { getSessionPayload } from "@/lib/auth";
 
 export const POST = asyncHandler(async (req: Request) => {
   await connectDb();
@@ -33,6 +34,16 @@ export const GET = asyncHandler(async (req: Request) => {
       { status: 200 }
     );
   }
+
+  const session = await getSessionPayload();
+  if (session?.role === "student") {
+    const profile = await StudentService.getStudentProfileByUserId(session._id);
+    return Response.json(
+      new ApiResponse(200, profile, "Student profile fetched successfully"),
+      { status: 200 }
+    );
+  }
+
   const allStudents = await StudentService.getAllStudents();
   return Response.json(
     new ApiResponse(200, allStudents, "All students fetched successfully"),

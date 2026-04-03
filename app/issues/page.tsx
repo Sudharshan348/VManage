@@ -19,7 +19,7 @@ export default async function IssuesPage() {
     <PortalShell title="Raise issue" eyebrow="Support" accent="green">
       <SectionCard title="Submit ticket" subtitle="Stored against the maintenance schema">
         <IssueForm
-          studentName={profile.student.name}
+          studentName={profile.user.name}
           rollNo={profile.student.rollNo}
           phone={profile.student.phone}
           roomAssigned={Boolean(profile.student.roomId)}

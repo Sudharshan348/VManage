@@ -2,36 +2,63 @@ import { StudentRepository } from "@/lib/repositories/student";
 import { StudentSignupPayload } from "@/lib/validation/student";
 import { User } from "@/lib/models/user.model"; 
 import { ApiError } from "@/lib/util/apierror";
+import mongoose from "mongoose";
 
 export class StudentService {
   static async createStudentProfile(data: StudentSignupPayload) {
-    const existingUser = await User.findOne({ email: data.email });
-    if (existingUser) {
-      throw new ApiError(409, "A user with this email already exists");
-    }
     const existingRollNo = await StudentRepository.findByRollNo(data.rollNo);
     if (existingRollNo) {
       throw new ApiError(409, "A student with this roll number already exists");
     }
-    const newUser = await User.create({
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      role: "student",
-    });
-    const newProfile = await StudentRepository.createProfile({
-      userId: newUser._id as any,
+
+    const existingStudentByEmail = await StudentRepository.findByEmail(data.email);
+    if (existingStudentByEmail) {
+      throw new ApiError(409, "A student with this email already exists");
+    }
+
+    let user = await User.findOne({ email: data.email });
+    let createdUser = false;
+
+    if (user?.studentId) {
+      throw new ApiError(409, "A user with this email already exists");
+    }
+
+    if (!user) {
+      user = await User.create({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: "student",
+      });
+      createdUser = true;
+    } else {
+      user.name = data.name;
+      user.password = data.password;
+      user.role = "student";
+      await user.save();
+    }
+
+    try {
+      const newProfile = await StudentRepository.createProfile({
+      userId: user._id as mongoose.Types.ObjectId,
       rollNo: data.rollNo,
+      email: data.email,
       phone: data.phone,
       course: data.course,
       year: data.year,
       parentPhone: data.parentPhone,
       address: data.address,
-    });
-    newUser.studentId = newProfile._id as any;
-    await newUser.save();
+      });
+      user.studentId = newProfile._id as mongoose.Types.ObjectId;
+      await user.save();
 
-    return newProfile;
+      return newProfile;
+    } catch (error) {
+      if (createdUser && !user.studentId) {
+        await User.findByIdAndDelete(user._id);
+      }
+      throw error;
+    }
   }
 
   static async getAllStudents() {
@@ -49,5 +76,23 @@ export class StudentService {
       throw new ApiError(404, "Student profile not found");
     }
     return profile;
+  }
+
+  static async getStudentProfileByUserId(userId: string) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    if (user.studentId) {
+      return StudentRepository.findById(user.studentId);
+    }
+
+    const profile = await StudentRepository.findByUserId(user._id);
+    if (profile) {
+      return profile;
+    }
+
+    throw new ApiError(404, "Student profile not found");
   }
 }

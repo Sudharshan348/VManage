@@ -5,9 +5,15 @@ export class StudentRepository {
   static async findByRollNo(rollNo: string): Promise<IStudent | null> {
     return Student.findOne({ rollNo }).populate("roomId");
   }
+
+  static async findByEmail(email: string): Promise<IStudent | null> {
+    return Student.findOne({ email }).populate("roomId");
+  }
+
   static async createProfile(data: {
     userId: mongoose.Types.ObjectId;
     rollNo: string;
+    email: string;
     phone: string;
     course: string;
     year: number;
@@ -23,5 +29,9 @@ export class StudentRepository {
 
   static async findById(id: mongoose.Types.ObjectId | string): Promise<IStudent | null> {
     return Student.findById(id).populate("roomId");
+  }
+
+  static async findByUserId(userId: mongoose.Types.ObjectId | string): Promise<IStudent | null> {
+    return Student.findOne({ userId }).populate("roomId");
   }
 }

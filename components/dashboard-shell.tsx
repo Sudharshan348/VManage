@@ -7,6 +7,7 @@ import {
   ClipboardList,
   Home,
   LogOut,
+  Hotel,
   TriangleAlert,
   UserRound,
   Users,
@@ -21,6 +22,7 @@ const navConfig = {
   ],
   admin: [
     { href: "/admin", label: "Overview", icon: Home },
+    { href: "/admin/room", label: "Rooms", icon: Hotel },
     { href: "/admin", label: "Post notice", icon: Bell },
     { href: "/admin", label: "Current complaints", icon: ClipboardList },
     { href: "/admin", label: "Maintenance issues", icon: Users },

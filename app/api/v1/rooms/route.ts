@@ -19,7 +19,7 @@ export const POST = asyncHandler(async (req: Request) => {
   );
 });
 
-export const GET = asyncHandler(async (req: Request) => {
+export const GET = asyncHandler(async () => {
   await connectDb();
   const rooms = await RoomService.getAllRooms();
   return Response.json(

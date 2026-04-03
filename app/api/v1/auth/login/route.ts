@@ -29,11 +29,11 @@ export const POST = asyncHandler(async (req: Request) => {
 
   if (!user) {
     const student = await Student.findOne({ rollNo: identifier.toUpperCase() })
-      .select("email")
+      .select("userId")
       .lean()
 
-    if (student?.email) {
-      user = await User.findOne({ email: student.email.toLowerCase() })
+    if (student?.userId) {
+      user = await User.findById(student.userId)
     }
   }
 

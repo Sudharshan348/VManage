@@ -1,12 +1,12 @@
 import { Room, IRoom } from "@/lib/models/room.model";
-import { CreateRoomInput } from "@/lib/validation/room";
+import { RoomInput } from "@/lib/validation/room";
 
 export class RoomRepository {
   static async findByRoomNumber(roomNumber: string): Promise<IRoom | null> {
     return Room.findOne({ roomNumber });
   }
 
-  static async create(data: CreateRoomInput): Promise<IRoom> {
+  static async create(data: RoomInput): Promise<IRoom> {
     return Room.create(data);
   }
 

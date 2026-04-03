@@ -56,8 +56,8 @@ export async function getCurrentStudentProfile() {
     student = await Student.findById(user.studentId).lean();
   }
 
-  if (!student && user.email) {
-    student = await Student.findOne({ email: user.email }).lean();
+  if (!student && user._id) {
+    student = await Student.findOne({ userId: user._id }).lean();
   }
 
   return {

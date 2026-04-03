@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 
 import { DashboardCard, DashboardShell, Panel } from "@/components/dashboard-shell";
 import { getCurrentStudentProfile } from "@/lib/auth";
+import connectDb from "@/lib/db/mongoose";
+import { Room } from "@/lib/models/room.model";
 
 function formatValue(value?: string | number | null) {
   return value ? String(value) : "Not provided";
@@ -38,6 +40,15 @@ export default async function StudentPage() {
   }
 
   const student = profile.student;
+  let roomLabel = "Not assigned";
+
+  if (student?.roomId) {
+    await connectDb();
+    const room = await Room.findById(student.roomId).select("block roomNumber floor").lean();
+    if (room) {
+      roomLabel = `${room.block}-${room.roomNumber} • Floor ${room.floor}`;
+    }
+  }
 
   return (
     <DashboardShell title="Student dashboard" role="student" userName={profile.user.name}>
@@ -54,7 +65,7 @@ export default async function StudentPage() {
           <InfoItem label="Phone" value={student?.phone} />
           <InfoItem label="Status" value={student?.status} />
           <InfoItem label="Parent phone" value={student?.parentPhone} />
-          <InfoItem label="Room assignment" value={student?.roomId?.toString()} />
+          <InfoItem label="Room assignment" value={roomLabel} />
           <InfoItem label="Address" value={student?.address} fullWidth />
         </div>
       </Panel>

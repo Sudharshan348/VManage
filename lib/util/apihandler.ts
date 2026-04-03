@@ -8,7 +8,10 @@ export const asyncHandler = (handler: (req: Request) => Promise<Response>) => {
     } catch (error) {
       if (error instanceof ApiError) {
         return Response.json(
-          new ApiResponse(error.statusCode, null, error.message),
+          {
+            ...new ApiResponse(error.statusCode, null, error.message),
+            errors: error.errors,
+          },
           { status: error.statusCode }
         )
       }

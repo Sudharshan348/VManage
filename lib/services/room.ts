@@ -1,9 +1,9 @@
 import { RoomRepository } from "@/lib/repositories/room";
-import { CreateRoomInput } from "@/lib/validation/room";
+import { RoomInput } from "@/lib/validation/room";
 import { ApiError } from "@/lib/util/apierror";
 
 export class RoomService {
-  static async addRoom(data: CreateRoomInput) {
+  static async addRoom(data: RoomInput) {
     const existingRoom = await RoomRepository.findByRoomNumber(data.roomNumber);
     
     if (existingRoom) {
