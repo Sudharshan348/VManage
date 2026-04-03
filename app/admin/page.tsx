@@ -4,7 +4,7 @@ import { AdminNoticeForm } from "@/components/admin-notice-form";
 import { DashboardCard, DashboardShell, Panel } from "@/components/dashboard-shell";
 import { getCurrentUser } from "@/lib/auth";
 import connectDb from "@/lib/db/mongoose";
-import { MaintenanceTicket } from "@/lib/models/maintenance.model";
+import { MaintenanceTicket } from "@/lib/models/issue.model";
 import { Notice } from "@/lib/models/notice.model";
 import { Student } from "@/lib/models/student.model";
 import { User } from "@/lib/models/user.model";

@@ -1,6 +1,6 @@
 import { getCurrentStudentProfile } from "@/lib/auth";
 import connectDb from "@/lib/db/mongoose";
-import { MaintenanceTicket } from "@/lib/models/maintenance.model";
+import { MaintenanceTicket } from "@/lib/models/issue.model";
 import { ApiError } from "@/lib/util/apierror";
 import { asyncHandler } from "@/lib/util/apihandler";
 import { ApiResponse } from "@/lib/util/apiresponse";

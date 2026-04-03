@@ -1,70 +1,44 @@
 import mongoose, { Document, Model } from "mongoose";
 
-export type TicketStatus = "open" | "in_progress" | "resolved" | "closed";
-export type TicketPriority = "low" | "medium" | "high" | "urgent";
-export type TicketCategory =
-  | "plumbing"
-  | "electrical"
-  | "furniture"
-  | "cleaning"
-  | "internet"
-  | "other";
+export type PreventiveStatus = "pending" | "scheduled" | "completed" | "ignored";
 
-export interface IMaintenanceTicket extends Document {
-  studentId: mongoose.Types.ObjectId;
-  roomId: mongoose.Types.ObjectId;
-  title: string;
-  description: string;
-  category: TicketCategory;
-  priority: TicketPriority;
-  status: TicketStatus;
-  assignedTo?: string;
-  resolvedAt?: Date;
-  resolvedNote?: string;
+export interface IPreventiveMaintenance extends Document {
+  assetId: mongoose.Types.ObjectId;
+  riskScore: number; 
+  status: PreventiveStatus;
+  scheduledDate?: Date;
+  completedAt?: Date;
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const maintenanceSchema = new mongoose.Schema<IMaintenanceTicket>(
+const preventiveMaintenanceSchema = new mongoose.Schema<IPreventiveMaintenance>(
   {
-    studentId: {
+    assetId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
+      ref: "Asset",
       required: true,
     },
-    roomId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Room",
-      required: true,
-    },
-    title: { type: String, required: true, trim: true },
-    description: { type: String, required: true },
-    category: {
-      type: String,
-      enum: ["plumbing", "electrical", "furniture", "cleaning", "internet", "other"],
-      required: true,
-    },
-    priority: {
-      type: String,
-      enum: ["low", "medium", "high", "urgent"],
-      default: "medium",
+    riskScore: { 
+      type: Number, 
+      required: true 
     },
     status: {
       type: String,
-      enum: ["open", "in_progress", "resolved", "closed"],
-      default: "open",
+      enum: ["pending", "scheduled", "completed", "ignored"],
+      default: "pending",
     },
-    assignedTo: String,
-    resolvedAt: Date,
-    resolvedNote: String,
+    scheduledDate: Date,
+    completedAt: Date,
+    notes: String,
   },
   { timestamps: true }
 );
 
-maintenanceSchema.index({ studentId: 1 });
-maintenanceSchema.index({ status: 1 });
-maintenanceSchema.index({ createdAt: -1 });
+preventiveMaintenanceSchema.index({ assetId: 1 });
+preventiveMaintenanceSchema.index({ status: 1 });
 
-export const MaintenanceTicket: Model<IMaintenanceTicket> =
-  mongoose.models.MaintenanceTicket ??
-  mongoose.model<IMaintenanceTicket>("MaintenanceTicket", maintenanceSchema);
+export const PreventiveMaintenance: Model<IPreventiveMaintenance> =
+  mongoose.models.PreventiveMaintenance ??
+  mongoose.model<IPreventiveMaintenance>("PreventiveMaintenance", preventiveMaintenanceSchema);
