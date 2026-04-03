@@ -1,5 +1,5 @@
 import connectDb from "@/lib/db/mongoose"
-import { ApiResponse } from "@/lib/Utils/apiresponse"
+import { ApiResponse } from "@/lib/util/apiresponse"
 
 export async function GET() {
     await connectDb()  

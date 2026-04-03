@@ -1,5 +1,5 @@
-import { ApiError } from "@/lib/Utils/apierror"
-import { ApiResponse } from "@/lib/Utils/apiresponse"
+import { ApiError } from "@/lib/util/apierror"
+import { ApiResponse } from "@/lib/util/apiresponse"
 
 export const asyncHandler = (handler: (req: Request) => Promise<Response>) => {
   return async (req: Request): Promise<Response> => {
