@@ -1,5 +1,5 @@
-import { ApiResponse } from "@/lib/Utils/apiresponse"
-import { asyncHandler } from "@/lib/Utils/apihandler"
+import { ApiResponse } from "@/lib/util/apiresponse"
+import { asyncHandler } from "@/lib/util/apihandler"
 import { cookies } from "next/headers"
 
 export const POST = asyncHandler(async (req: Request) => {

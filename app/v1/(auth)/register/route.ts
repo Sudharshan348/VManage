@@ -1,8 +1,8 @@
 import connectDb from "@/lib/db/mongoose"
 import { User } from "@/lib/models/user.model"
-import { ApiError } from "@/lib/Utils/apierror"
-import { ApiResponse } from "@/lib/Utils/apiresponse"
-import { asyncHandler } from "@/lib/Utils/apihandler"
+import { ApiError } from "@/lib/util/apierror"
+import { ApiResponse } from "@/lib/util/apiresponse"
+import { asyncHandler } from "@/lib/util/apihandler"
 
 export const POST = asyncHandler(async (req: Request) => {
   await connectDb()

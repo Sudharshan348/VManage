@@ -1,7 +1,7 @@
 import mongoose, { Document, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 
-export type UserRole = "super_admin" | "warden" | "student";
+export type UserRole = "admin" | "warden" | "student";
 
 export interface IUser extends Document {
   name: string;
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema<IUser>(
     password: { type: String, required: true, minlength: 6 },
     role: {
       type: String,
-      enum: ["super_admin", "warden", "student"],
+      enum: ["admin", "warden", "student"],
       default: "student",
     },
     studentId: {
