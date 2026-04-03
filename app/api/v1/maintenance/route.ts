@@ -27,13 +27,11 @@ export const POST = asyncHandler(async (req: Request) => {
     throw new ApiError(404, "Asset not found");
   }
 
-  // Calculate days since the last service dynamically
   const now = new Date();
   const lastMaint = new Date(asset.lastMaintenance);
   const diffTime = Math.abs(now.getTime() - lastMaint.getTime());
   const daysSinceService = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  // Map to the snake_case format the Python FastAPI expects
   const pythonPayload = {
     asset_id: asset._id.toString(),
     asset_type: asset.assetType,
@@ -55,7 +53,6 @@ export const POST = asyncHandler(async (req: Request) => {
 
   const predictionData = await response.json();
 
-  // Automatically create a Preventive Maintenance task if the AI flags it as critical
   let createdTask = null;
   if (predictionData.alert_required) {
     const existingTask = await PreventiveMaintenance.findOne({
