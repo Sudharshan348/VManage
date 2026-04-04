@@ -3,8 +3,6 @@ import { ApiResponse } from "@/lib/util/apiresponse";
 import { ApiError } from "@/lib/util/apierror";
 import connectDb from "@/lib/db/mongoose";
 import { RoommateProfile } from "@/lib/models/rommateprofile.model";
-import { Student } from "@/lib/models/student.model";
-import { StudentService } from "@/lib/services/student";
 import { getSessionPayload } from "@/lib/auth";
 
 type MatchStudentSummary = {
@@ -205,14 +203,7 @@ export const POST = asyncHandler(async (req: Request) => {
     throw new ApiError(400, "Student ID is required");
   }
 
-  const ensuredTargetProfile = await StudentService.ensureRoommateProfile(studentId);
-
-  const otherStudents = await Student.find({ _id: { $ne: studentId } }).select("_id");
-  await Promise.all(
-    otherStudents.map((student) => StudentService.ensureRoommateProfile(student._id))
-  );
-
-  const targetProfile = await RoommateProfile.findById(ensuredTargetProfile._id).populate({
+  const targetProfile = await RoommateProfile.findOne({ studentId }).populate({
     path: "studentId",
     populate: { path: "userId" }
   });
@@ -223,18 +214,13 @@ export const POST = asyncHandler(async (req: Request) => {
 
   const targetStudentDoc = targetProfile.studentId as unknown as PopulatedStudentDoc;
   const targetNames = getStudentNames(targetStudentDoc);
-  const rawPoolProfiles = await RoommateProfile.find({
+  const poolProfiles = await RoommateProfile.find({
     studentId: { $ne: targetProfile.studentId },
+    bedPreference: targetProfile.bedPreference,
+    acPreference: targetProfile.acPreference,
   }).populate({
     path: "studentId",
     populate: { path: "userId" }
-  });
-
-  const poolProfiles = rawPoolProfiles.filter((profile) => {
-    return (
-      profile.bedPreference === targetProfile.bedPreference &&
-      profile.acPreference === targetProfile.acPreference
-    );
   });
 
   const studentLookup = new Map<string, MatchStudentSummary>();

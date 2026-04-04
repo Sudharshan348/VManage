@@ -35,18 +35,23 @@ export const GET = asyncHandler(async (req: Request) => {
     );
   }
 
-  const session = await getSessionPayload();
-  if (session?.role === "student") {
-    const profile = await StudentService.getStudentProfileByUserId(session._id);
+  const adminSession = await getSessionPayload("admin");
+  if (adminSession?.role === "admin") {
+    const allStudents = await StudentService.getAllStudents();
+    return Response.json(
+      new ApiResponse(200, allStudents, "All students fetched successfully"),
+      { status: 200 }
+    );
+  }
+
+  const studentSession = await getSessionPayload("student");
+  if (studentSession?.role === "student") {
+    const profile = await StudentService.getStudentProfileByUserId(studentSession._id);
     return Response.json(
       new ApiResponse(200, profile, "Student profile fetched successfully"),
       { status: 200 }
     );
   }
 
-  const allStudents = await StudentService.getAllStudents();
-  return Response.json(
-    new ApiResponse(200, allStudents, "All students fetched successfully"),
-    { status: 200 }
-  );
+  throw new ApiError(401, "Unauthorized request");
 });
