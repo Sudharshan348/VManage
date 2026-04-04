@@ -47,8 +47,8 @@ function InfoItem({
 }) {
   return (
     <div className={fullWidth ? "md:col-span-2" : undefined}>
-      <p className="text-sm font-medium text-slate-500">{label}</p>
-      <p className="mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900">
+      <p className="text-xs font-semibold text-muted-foreground mb-1">{label}</p>
+      <p className="rounded border border-border bg-gray-50 px-3 py-2 text-sm text-foreground">
         {formatValue(value)}
       </p>
     </div>
@@ -106,23 +106,20 @@ export function StudentDashboardClient({ profile }: StudentDashboardClientProps)
 
       <Panel title="Latest notices">
         {loading ? (
-          <p className="text-sm text-slate-500">Loading notices...</p>
+          <p className="text-sm text-muted-foreground">Loading notices...</p>
         ) : notices.length === 0 ? (
-          <p className="text-sm text-slate-500">No notices available</p>
+          <p className="text-sm text-muted-foreground">No notices available</p>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {notices.slice(0, 6).map((notice) => (
-              <article
-                key={notice._id}
-                className="rounded-[24px] border border-slate-200 bg-slate-50 px-5 py-4"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h4 className="text-base font-semibold text-slate-950">{notice.title}</h4>
-                  <span className="rounded-full bg-white px-3 py-1 text-xs font-medium uppercase tracking-wide text-slate-600">
+              <article key={notice._id} className="border-l-4 border-l-primary bg-gray-50 p-3 rounded">
+                <div className="flex items-start justify-between gap-3 mb-1">
+                  <h4 className="font-semibold text-foreground text-sm">{notice.title}</h4>
+                  <span className="bg-primary/10 text-primary px-2 py-1 text-xs font-semibold rounded whitespace-nowrap">
                     {notice.category}
                   </span>
                 </div>
-                <p className="mt-3 text-sm text-slate-700">{notice.content}</p>
+                <p className="text-sm text-muted-foreground">{notice.content}</p>
               </article>
             ))}
           </div>

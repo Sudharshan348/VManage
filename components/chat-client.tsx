@@ -87,14 +87,14 @@ export function ChatClient() {
       </form>
 
       {error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       ) : null}
 
-      <div className="space-y-4">
+      <div className="space-y-3 max-h-96 overflow-y-auto px-2 border border-border rounded p-4 bg-gray-50">
         {messages.length === 0 ? (
-          <div className="rounded-[24px] border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
+          <div className="text-center py-8 text-sm text-muted-foreground">
             Start a conversation to see AI replies here.
           </div>
         ) : (
@@ -103,14 +103,14 @@ export function ChatClient() {
               key={`${message.role}-${index}`}
               className={
                 message.role === "user"
-                  ? "ml-auto max-w-3xl rounded-[24px] bg-emerald-600 px-5 py-4 text-sm text-white"
-                  : "max-w-3xl rounded-[24px] border border-slate-200 bg-white px-5 py-4 text-sm text-slate-800"
+                  ? "ml-auto max-w-xs rounded bg-primary text-primary-foreground px-3 py-2 text-sm"
+                  : "mr-auto max-w-xs rounded bg-white border border-border px-3 py-2 text-sm"
               }
             >
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] opacity-70">
+              <p className="mb-1 text-xs font-semibold opacity-75">
                 {message.role === "user" ? "You" : "Assistant"}
               </p>
-              <pre className="whitespace-pre-wrap font-sans">{message.content}</pre>
+              <p className="whitespace-pre-wrap text-sm">{message.content}</p>
             </article>
           ))
         )}

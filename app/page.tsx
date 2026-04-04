@@ -1,57 +1,108 @@
 import Link from "next/link";
 import { ArrowRight, LogIn, UserPlus } from "lucide-react";
 
-const entryCards = [
-  {
-    href: "/signup",
-    title: "Student signup",
-    icon: UserPlus,
-    tint: "bg-emerald-50 text-emerald-700",
-  },
-  {
-    href: "/login",
-    title: "Sign in",
-    icon: LogIn,
-    tint: "bg-red-50 text-red-700",
-  },
-];
-
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_35px_90px_-60px_rgba(15,23,42,0.45)]">
-        <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
-          <section className="bg-gradient-to-br from-red-700 via-red-600 to-emerald-600 p-8 text-white sm:p-12">
-            <h1 className="mt-5 max-w-xl text-4xl font-semibold leading-tight sm:text-5xl">
-              VManage
-            </h1>
-          </section>
-
-          <section className="bg-slate-50 p-8 sm:p-12">
-            <div className="grid gap-4">
-              {entryCards.map((card) => {
-                const Icon = card.icon;
-
-                return (
-                  <Link
-                    key={card.href}
-                    href={card.href}
-                    className="group rounded-[28px] border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:shadow-lg"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className={`inline-flex rounded-2xl p-3 ${card.tint}`}>
-                          <Icon className="size-5" />
-                        </div>
-                        <h2 className="text-lg font-semibold text-slate-950">{card.title}</h2>
-                      </div>
-                      <ArrowRight className="size-5 text-slate-400 transition group-hover:text-slate-900" />
-                    </div>
-                  </Link>
-                );
-              })}
+    <main className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border bg-white sticky top-0 z-50">
+        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2">
+            <div className="bg-primary text-primary-foreground px-2 py-1 rounded text-sm font-bold">
+              VM
             </div>
-          </section>
+            <p className="text-lg font-semibold text-foreground">VManage</p>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <div className="bg-white border-b border-border">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-5xl font-bold text-foreground mb-4">
+            Smart Dormitory Management System
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Streamline your residence with intelligent room management, maintenance tracking, and AI-powered support. Manage your dorm experience effortlessly.
+          </p>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="max-w-xl mx-auto">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Get Started</h2>
+
+          <div className="space-y-4">
+            {/* Student Signup Card */}
+            <Link
+              href="/signup"
+              className="card-base p-4 hover:shadow-md transition-all block group"
+            >
+              <div className="flex items-start gap-4">
+                <div className="bg-primary/10 text-primary p-3 rounded flex-shrink-0">
+                  <UserPlus className="size-6" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground text-lg mb-1">
+                    New Student?
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Create an account to get started with VManage
+                  </p>
+                  <div className="flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all">
+                    Sign up now <ArrowRight className="size-4" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Login Card */}
+            <Link
+              href="/login"
+              className="card-base p-4 hover:shadow-md transition-all block group"
+            >
+              <div className="flex items-start gap-4">
+                <div className="bg-secondary/10 text-secondary p-3 rounded flex-shrink-0">
+                  <LogIn className="size-6" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground text-lg mb-1">
+                    Already have an account?
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Sign in to access your dashboard and manage your residence
+                  </p>
+                  <div className="flex items-center gap-1 text-secondary text-sm font-medium group-hover:gap-2 transition-all">
+                    Sign in now <ArrowRight className="size-4" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          {/* Features */}
+          <div className="mt-12 pt-8 border-t border-border">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Why VManage?</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-start gap-3">
+                <span className="text-primary font-bold">✓</span>
+                <span>Easy room and profile management</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary font-bold">✓</span>
+                <span>Quick issue reporting and tracking</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary font-bold">✓</span>
+                <span>AI-powered support and assistance</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary font-bold">✓</span>
+                <span>Real-time updates and notifications</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </main>

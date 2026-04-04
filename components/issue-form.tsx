@@ -116,24 +116,24 @@ export function IssueForm({
       </FormGrid>
 
       {!roomAssigned ? (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+        <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-400">
           Your account does not have a room assignment yet, so issue submission is disabled.
         </div>
       ) : null}
 
       {error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       ) : null}
 
       {message ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        <div className="rounded-lg border border-green-500/50 bg-green-500/10 px-4 py-3 text-sm text-green-400">
           {message}
         </div>
       ) : null}
 
-      <div className="flex justify-end border-t border-slate-200 pt-5">
+      <div className="flex justify-end border-t border-border/50 pt-5">
         <AccentButton accent="green" disabled={loading || !roomAssigned}>
           {loading ? "Submitting..." : "Submit issue"}
         </AccentButton>

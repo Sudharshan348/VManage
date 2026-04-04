@@ -83,12 +83,12 @@ export function AdminNoticeForm() {
       </Field>
 
       {error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       ) : null}
 
-      <div className="flex justify-end">
+      <div className="flex justify-end border-t border-border/50 pt-4">
         <AccentButton accent="red" disabled={loading}>
           {loading ? "Posting..." : "Post notice"}
         </AccentButton>

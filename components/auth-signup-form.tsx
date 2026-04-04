@@ -203,12 +203,12 @@ export function AuthSignupForm() {
       </FormGrid>
 
       {message ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {message}
         </div>
       ) : null}
 
-      <div className="flex justify-end border-t border-slate-200 pt-5">
+      <div className="flex justify-end border-t border-border/50 pt-5">
         <AccentButton accent="green" disabled={loading}>
           {loading ? "Creating account..." : "Create account"}
         </AccentButton>

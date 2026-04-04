@@ -96,28 +96,28 @@ export function AuthLoginForm() {
         ) : null}
       </Field>
 
-      <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-        <label className="flex items-center gap-3 text-sm text-slate-600">
+      <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-muted/30 px-4 py-3 transition-smooth">
+        <label className="flex items-center gap-3 text-sm text-muted-foreground cursor-pointer">
           <input
             type="checkbox"
             checked={rememberMe}
             onChange={(event) => setRememberMe(event.target.checked)}
-            className="size-4 rounded border-slate-300"
+            className="size-4 rounded border-border/50 bg-input cursor-pointer"
           />
           Remember me
         </label>
-        <a href="#" className="text-sm font-medium text-red-600 hover:text-red-700">
+        <a href="#" className="text-sm font-medium text-accent hover:text-accent/80 transition-colors">
           Forgot password?
         </a>
       </div>
 
       {error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
         </div>
       ) : null}
 
-      <div className="flex justify-end border-t border-slate-200 pt-5">
+      <div className="flex justify-end border-t border-border/50 pt-5">
         <AccentButton accent="red" disabled={loading}>
           {loading ? "Signing in..." : "Sign in"}
         </AccentButton>
