@@ -12,7 +12,8 @@ export type TicketCategory =
 
 export interface IMaintenanceTicket extends Document {
   studentId: mongoose.Types.ObjectId;
-  roomId: mongoose.Types.ObjectId;
+  roomId?: mongoose.Types.ObjectId;
+  roomNumber: string;
   title: string;
   description: string;
   category: TicketCategory;
@@ -35,8 +36,8 @@ const maintenanceSchema = new mongoose.Schema<IMaintenanceTicket>(
     roomId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Room",
-      required: true,
     },
+    roomNumber: { type: String, required: true, trim: true, uppercase: true },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
     category: {

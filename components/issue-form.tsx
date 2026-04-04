@@ -9,16 +9,17 @@ type IssueFormProps = {
   studentName: string;
   rollNo: string;
   phone: string;
-  roomAssigned: boolean;
+  initialRoomNumber?: string;
 };
 
 export function IssueForm({
   studentName,
   rollNo,
   phone,
-  roomAssigned,
+  initialRoomNumber = "",
 }: IssueFormProps) {
   const router = useRouter();
+  const [roomNumber, setRoomNumber] = useState(initialRoomNumber);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("electrical");
@@ -40,6 +41,7 @@ export function IssueForm({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          roomNumber,
           title,
           description,
           category,
@@ -54,6 +56,7 @@ export function IssueForm({
         return;
       }
 
+      setRoomNumber(initialRoomNumber);
       setTitle("");
       setDescription("");
       setCategory("electrical");
@@ -78,6 +81,14 @@ export function IssueForm({
         </Field>
         <Field label="Phone">
           <Input value={phone} readOnly />
+        </Field>
+        <Field label="Room number">
+          <Input
+            value={roomNumber}
+            onChange={(event) => setRoomNumber(event.target.value.toUpperCase())}
+            placeholder="C-118"
+            required
+          />
         </Field>
         <Field label="Priority">
           <Select value={priority} onChange={(event) => setPriority(event.target.value)}>
@@ -115,12 +126,6 @@ export function IssueForm({
         </Field>
       </FormGrid>
 
-      {!roomAssigned ? (
-        <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-400">
-          Your account does not have a room assignment yet, so issue submission is disabled.
-        </div>
-      ) : null}
-
       {error ? (
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
@@ -134,7 +139,7 @@ export function IssueForm({
       ) : null}
 
       <div className="flex justify-end border-t border-border/50 pt-5">
-        <AccentButton accent="green" disabled={loading || !roomAssigned}>
+        <AccentButton accent="green" disabled={loading}>
           {loading ? "Submitting..." : "Submit issue"}
         </AccentButton>
       </div>

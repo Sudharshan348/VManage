@@ -3,6 +3,7 @@ import connectDb from "@/lib/db/mongoose";
 import { ApiError } from "@/lib/util/apierror";
 import { asyncHandler } from "@/lib/util/apihandler";
 import { ApiResponse } from "@/lib/util/apiresponse";
+import { Room } from "@/lib/models/room.model";
 import { TicketService } from "@/lib/services/ticket";
 
 const allowedCategories = new Set([
@@ -23,18 +24,15 @@ export const POST = asyncHandler(async (req: Request) => {
     throw new ApiError(403, "Only students can raise issues");
   }
 
-  if (!profile.student.roomId) {
-    throw new ApiError(400, "Room assignment is required before raising an issue");
-  }
-
   const body = (await req.json()) as Record<string, unknown>;
   const title = typeof body.title === "string" ? body.title.trim() : "";
   const description = typeof body.description === "string" ? body.description.trim() : "";
   const category = typeof body.category === "string" ? body.category.trim() : "";
   const priority = typeof body.priority === "string" ? body.priority.trim() : "";
+  const roomNumber = typeof body.roomNumber === "string" ? body.roomNumber.trim().toUpperCase() : "";
 
-  if (!title || !description) {
-    throw new ApiError(400, "Title and description are required");
+  if (!title || !description || !roomNumber) {
+    throw new ApiError(400, "Title, description and room number are required");
   }
 
   if (!allowedCategories.has(category)) {
@@ -45,8 +43,11 @@ export const POST = asyncHandler(async (req: Request) => {
     throw new ApiError(400, "Invalid priority");
   }
 
+  const room = await Room.findOne({ roomNumber }).select("_id").lean();
+
   const ticket = await TicketService.raiseTicket({
-    roomId: profile.student.roomId,
+    roomId: room?._id,
+    roomNumber,
     title,
     description,
     category,
