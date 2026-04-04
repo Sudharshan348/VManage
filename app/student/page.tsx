@@ -7,7 +7,7 @@ import connectDb from "@/lib/db/mongoose";
 import { Room } from "@/lib/models/room.model";
 
 export default async function StudentPage() {
-  const profile = await getCurrentStudentProfile();
+  const profile = await getCurrentStudentProfile("student");
 
   if (!profile?.user) {
     redirect("/login");

@@ -7,6 +7,10 @@ import { asyncHandler } from "@/lib/util/apihandler"
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 import { validateLoginInput } from "@/lib/validation/student";
+import {
+  AUTH_COOKIE_NAME,
+  getAuthCookieNameForRole,
+} from "@/lib/auth";
 
 export const POST = asyncHandler(async (req: Request) => {
 
@@ -54,12 +58,16 @@ export const POST = asyncHandler(async (req: Request) => {
   
   const loggedInuser = await User.findById(user._id).select("-password")
   const cookieStore = await cookies()
-  cookieStore.set("auth-token", token, {
+  const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 60 * 60 * 24 * 7 
-  })
+    maxAge: 60 * 60 * 24 * 7,
+    path: "/",
+  } as const
+
+  cookieStore.set(AUTH_COOKIE_NAME, token, cookieOptions)
+  cookieStore.set(getAuthCookieNameForRole(user.role), token, cookieOptions)
 
   return Response.json(
     new ApiResponse(200,{ user: loggedInuser },"User has been logged in"),{ status: 200 }

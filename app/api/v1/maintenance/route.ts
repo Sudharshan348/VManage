@@ -22,7 +22,7 @@ function getNumber(value: unknown) {
 }
 
 export const POST = asyncHandler(async (req: Request) => {
-  const session = await getSessionPayload();
+  const session = await getSessionPayload("admin");
 
   if (!session || (session.role !== "admin" && session.role !== "warden")) {
     throw new ApiError(403, "Forbidden: Administrative access required");

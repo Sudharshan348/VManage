@@ -19,7 +19,7 @@ const allowedPriorities = new Set(["low", "medium", "high", "urgent"]);
 export const POST = asyncHandler(async (req: Request) => {
   await connectDb();
 
-  const profile = await getCurrentStudentProfile();
+  const profile = await getCurrentStudentProfile("student");
   if (!profile?.user || profile.user.role !== "student" || !profile.student) {
     throw new ApiError(403, "Only students can raise issues");
   }
@@ -30,6 +30,8 @@ export const POST = asyncHandler(async (req: Request) => {
   const category = typeof body.category === "string" ? body.category.trim() : "";
   const priority = typeof body.priority === "string" ? body.priority.trim() : "";
   const roomNumber = typeof body.roomNumber === "string" ? body.roomNumber.trim().toUpperCase() : "";
+  const reopenTicketId =
+    typeof body.reopenTicketId === "string" ? body.reopenTicketId.trim() : "";
 
   if (!title || !description || !roomNumber) {
     throw new ApiError(400, "Title, description and room number are required");
@@ -45,17 +47,20 @@ export const POST = asyncHandler(async (req: Request) => {
 
   const room = await Room.findOne({ roomNumber }).select("_id").lean();
 
-  const ticket = await TicketService.raiseTicket({
+  const ticketData = {
     roomId: room?._id,
     roomNumber,
     title,
     description,
     category,
     priority,
-  }, String(profile.student._id));
+  };
+  const ticket = reopenTicketId
+    ? await TicketService.reopenTicket(reopenTicketId, ticketData, String(profile.student._id))
+    : await TicketService.raiseTicket(ticketData, String(profile.student._id));
 
   return Response.json(
-    new ApiResponse(201, ticket, "Issue raised successfully"),
+    new ApiResponse(201, ticket, reopenTicketId ? "Issue reopened successfully" : "Issue raised successfully"),
     { status: 201 }
   );
 });

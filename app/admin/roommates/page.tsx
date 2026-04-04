@@ -5,7 +5,7 @@ import { DashboardShell, Panel } from "@/components/dashboard-shell";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function AdminRoommatesPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser("admin");
 
   if (!user) {
     redirect("/login");

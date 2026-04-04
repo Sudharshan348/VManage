@@ -189,7 +189,7 @@ function getMlApiUrl() {
 }
 
 export const POST = asyncHandler(async (req: Request) => {
-  const session = await getSessionPayload();
+  const session = await getSessionPayload("admin");
   if (!session) {
     throw new ApiError(401, "Unauthorized request");
   }

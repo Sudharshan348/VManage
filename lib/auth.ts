@@ -11,10 +11,11 @@ type SessionPayload = {
   role: "admin" | "warden" | "student";
 };
 
-export async function getSessionPayload(): Promise<SessionPayload | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth-token")?.value;
+export const AUTH_COOKIE_NAME = "auth-token";
+export const STUDENT_AUTH_COOKIE_NAME = "student-auth-token";
+export const ADMIN_AUTH_COOKIE_NAME = "admin-auth-token";
 
+function verifySessionToken(token?: string): SessionPayload | null {
   if (!token) {
     return null;
   }
@@ -29,8 +30,39 @@ export async function getSessionPayload(): Promise<SessionPayload | null> {
   }
 }
 
-export async function getCurrentUser() {
-  const session = await getSessionPayload();
+function getCookieNamesForPortal(portal?: "student" | "admin") {
+  if (portal === "student") {
+    return [STUDENT_AUTH_COOKIE_NAME, AUTH_COOKIE_NAME];
+  }
+
+  if (portal === "admin") {
+    return [ADMIN_AUTH_COOKIE_NAME, AUTH_COOKIE_NAME];
+  }
+
+  return [AUTH_COOKIE_NAME, ADMIN_AUTH_COOKIE_NAME, STUDENT_AUTH_COOKIE_NAME];
+}
+
+export function getAuthCookieNameForRole(role: SessionPayload["role"]) {
+  return role === "student" ? STUDENT_AUTH_COOKIE_NAME : ADMIN_AUTH_COOKIE_NAME;
+}
+
+export async function getSessionPayload(
+  portal?: "student" | "admin"
+): Promise<SessionPayload | null> {
+  const cookieStore = await cookies();
+
+  for (const cookieName of getCookieNamesForPortal(portal)) {
+    const session = verifySessionToken(cookieStore.get(cookieName)?.value);
+    if (session) {
+      return session;
+    }
+  }
+
+  return null;
+}
+
+export async function getCurrentUser(portal?: "student" | "admin") {
+  const session = await getSessionPayload(portal);
   if (!session) {
     return null;
   }
@@ -44,8 +76,8 @@ export async function getCurrentUser() {
   return user;
 }
 
-export async function getCurrentStudentProfile() {
-  const user = await getCurrentUser();
+export async function getCurrentStudentProfile(portal: "student" = "student") {
+  const user = await getCurrentUser(portal);
   if (!user) {
     return null;
   }

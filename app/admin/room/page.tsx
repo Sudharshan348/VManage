@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { Panel } from "@/components/dashboard-shell";
 
 export default async function AdminRoomPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser("admin");
 
   if (!user) {
     redirect("/login");

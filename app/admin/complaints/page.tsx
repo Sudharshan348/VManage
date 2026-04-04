@@ -9,7 +9,7 @@ import { Student } from "@/lib/models/student.model";
 import { User } from "@/lib/models/user.model";
 
 export default async function AdminComplaintsPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser("admin");
 
   if (!user) {
     redirect("/login");
@@ -22,7 +22,7 @@ export default async function AdminComplaintsPage() {
   await connectDb();
 
   const complaintDocs = await MaintenanceTicket.find()
-    .sort({ createdAt: -1 })
+    .sort({ updatedAt: -1, createdAt: -1 })
     .limit(30)
     .lean();
 

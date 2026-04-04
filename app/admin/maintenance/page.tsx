@@ -8,7 +8,7 @@ import { Asset } from "@/lib/models/assert.model";
 import { PreventiveMaintenance } from "@/lib/models/maintenance.model";
 
 export default async function AdminMaintenancePage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser("admin");
 
   if (!user) {
     redirect("/login");

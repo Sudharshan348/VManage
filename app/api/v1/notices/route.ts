@@ -8,7 +8,7 @@ import { ApiResponse } from "@/lib/util/apiresponse";
 export const POST = asyncHandler(async (req: Request) => {
   await connectDb();
 
-  const session = await getSessionPayload();
+  const session = await getSessionPayload("admin");
   if (!session || (session.role !== "admin" && session.role !== "warden")) {
     throw new ApiError(403, "Only faculty can post notices");
   }
@@ -51,7 +51,7 @@ export const GET = asyncHandler(async (req: Request) => {
   const { searchParams } = new URL(req.url);
   const showExpired = searchParams.get("expired"); 
 
-  let query: any = {};
+  let query: Record<string, unknown> = {};
 
   if (session.role === "student") {
     query = {

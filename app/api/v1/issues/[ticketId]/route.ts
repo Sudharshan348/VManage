@@ -1,5 +1,5 @@
 import connectDb from "@/lib/db/mongoose";
-import { getSessionPayload } from "@/lib/auth";
+import { getCurrentStudentProfile, getSessionPayload } from "@/lib/auth";
 import { MaintenanceTicket } from "@/lib/models/issue.model";
 import { TicketService } from "@/lib/services/ticket";
 import { validateTicketUpdate } from "@/lib/validation/issue";
@@ -11,7 +11,7 @@ export async function PATCH(
   context: { params: Promise<{ ticketId: string }> }
 ) {
   try {
-    const session = await getSessionPayload();
+    const session = await getSessionPayload("admin");
 
     if (!session || (session.role !== "admin" && session.role !== "warden")) {
       throw new ApiError(403, "Only admin or warden can update complaint status");
@@ -41,6 +41,46 @@ export async function PATCH(
 
     return Response.json(
       new ApiResponse(200, updatedTicket, "Complaint status updated successfully"),
+      { status: 200 }
+    );
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return Response.json(
+        new ApiResponse(error.statusCode, null, error.message),
+        { status: error.statusCode }
+      );
+    }
+
+    console.error("Unhandled API error:", error);
+
+    return Response.json(
+      new ApiResponse(500, null, "Internal server error"),
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(
+  _req: Request,
+  context: { params: Promise<{ ticketId: string }> }
+) {
+  try {
+    const profile = await getCurrentStudentProfile("student");
+
+    if (!profile?.user || profile.user.role !== "student" || !profile.student) {
+      throw new ApiError(403, "Only students can reopen issues");
+    }
+
+    await connectDb();
+
+    const { ticketId } = await context.params;
+    const updatedTicket = await TicketService.reopenTicketWithExistingDetails(
+      ticketId,
+      String(profile.student._id)
+    );
+
+    return Response.json(
+      new ApiResponse(200, updatedTicket, "Issue reopened successfully"),
       { status: 200 }
     );
   } catch (error) {

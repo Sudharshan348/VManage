@@ -7,7 +7,7 @@ import connectDb from "@/lib/db/mongoose";
 import { Notice } from "@/lib/models/notice.model";
 
 export default async function AdminPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser("admin");
 
   if (!user) {
     redirect("/login");
