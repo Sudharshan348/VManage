@@ -29,7 +29,6 @@ const navConfig = {
     { key: "admin-complaints", href: "/admin/complaints", label: "Complaints", icon: ClipboardList },
     { key: "admin-maintenance-ai", href: "/admin/maintenance", label: "Maintenance AI", icon: Cpu },
     { key: "admin-roommates", href: "/admin/roommates", label: "Roommate match", icon: ScanSearch },
-    { key: "admin-chat", href: "/chat", label: "AI chat", icon: Bot },
     { key: "admin-maintenance", href: "/admin/maintenance", label: "Maintenance issues", icon: Users },
   ],
 } as const;
