@@ -13,7 +13,26 @@ type StudentOption = {
   status: string;
 };
 
-type RoommateMatch = Record<string, unknown>;
+type MatchStudentSummary = {
+  studentId: string;
+  name: string;
+  rollNo: string;
+  course: string;
+  year: number;
+};
+
+type RoommateMatch = {
+  student_id: string;
+  compatibilityScore: number | null;
+  details: Record<string, unknown>;
+  student: MatchStudentSummary;
+};
+
+type RoommateMatcherResponse = {
+  status: string;
+  targetStudent: MatchStudentSummary;
+  matches: RoommateMatch[];
+};
 
 type ApiEnvelope<T> = {
   data?: T;
@@ -23,6 +42,8 @@ type ApiEnvelope<T> = {
 export function AdminRoommatesClient() {
   const [students, setStudents] = useState<StudentOption[]>([]);
   const [studentId, setStudentId] = useState("");
+  const [targetStudent, setTargetStudent] = useState<MatchStudentSummary | null>(null);
+  const [statusMessage, setStatusMessage] = useState("");
   const [matches, setMatches] = useState<RoommateMatch[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -67,6 +88,8 @@ export function AdminRoommatesClient() {
     event.preventDefault();
     setSubmitting(true);
     setError("");
+    setStatusMessage("");
+    setTargetStudent(null);
     setMatches([]);
 
     try {
@@ -78,20 +101,24 @@ export function AdminRoommatesClient() {
         body: JSON.stringify({ studentId }),
       });
 
-      const result = (await response.json()) as ApiEnvelope<RoommateMatch[]>;
+      const result = (await response.json()) as ApiEnvelope<RoommateMatcherResponse>;
 
       if (!response.ok) {
         setError(result.message || "Unable to calculate roommate matches");
         return;
       }
 
-      setMatches(Array.isArray(result.data) ? result.data : []);
+      setStatusMessage(result.data?.status || result.message || "");
+      setTargetStudent(result.data?.targetStudent || null);
+      setMatches(Array.isArray(result.data?.matches) ? result.data.matches : []);
     } catch {
       setError("Unable to calculate roommate matches");
     } finally {
       setSubmitting(false);
     }
   }
+
+  const selectedStudent = students.find((student) => student._id === studentId);
 
   return (
     <div className="space-y-6">
@@ -112,6 +139,14 @@ export function AdminRoommatesClient() {
         </div>
       </form>
 
+      {selectedStudent ? (
+        <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-700">
+          Running compatibility for <span className="font-semibold text-slate-900">{selectedStudent.rollNo}</span>
+          {" "}
+          in {selectedStudent.course}, Year {selectedStudent.year}.
+        </div>
+      ) : null}
+
       {loading ? (
         <div className="rounded-[24px] border border-slate-200 bg-white px-5 py-4 text-sm text-slate-500">
           Loading students...
@@ -124,24 +159,61 @@ export function AdminRoommatesClient() {
         </div>
       ) : null}
 
-      {!loading && matches.length === 0 && !error ? (
+      {statusMessage && !error ? (
+        <div className="rounded-[24px] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800">
+          {statusMessage}
+        </div>
+      ) : null}
+
+      {!loading && matches.length === 0 && !error && !statusMessage ? (
         <div className="rounded-[24px] border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
           Select a student and run the matcher to view compatible roommates.
         </div>
       ) : null}
 
+      {!loading && targetStudent && matches.length === 0 && !error ? (
+        <div className="rounded-[24px] border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
+          No compatible roommates were returned for {targetStudent.rollNo}.
+        </div>
+      ) : null}
+
       {matches.length > 0 ? (
         <div className="space-y-4">
+          {targetStudent ? (
+            <div className="rounded-[24px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
+              <p className="text-xs font-medium uppercase tracking-[0.15em] text-slate-500">
+                Selected student
+              </p>
+              <p className="mt-1 text-base font-semibold text-slate-900">
+                {targetStudent.name} ({targetStudent.rollNo})
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                {targetStudent.course} • Year {targetStudent.year}
+              </p>
+            </div>
+          ) : null}
+
           {matches.map((match, index) => (
             <article
-              key={`${String(match.student_id ?? "match")}-${index}`}
+              key={`${match.student_id}-${index}`}
               className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm"
             >
-              <p className="text-sm font-semibold text-slate-900">
-                Match {index + 1}
-              </p>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">
+                    Match {index + 1}: {match.student.name}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    {match.student.rollNo} • {match.student.course} • Year {match.student.year}
+                  </p>
+                </div>
+                <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                  Score: {match.compatibilityScore !== null ? match.compatibilityScore : "N/A"}
+                </div>
+              </div>
+
               <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {Object.entries(match).map(([key, value]) => (
+                {Object.entries(match.details).map(([key, value]) => (
                   <div key={key}>
                     <p className="text-xs font-medium uppercase tracking-[0.15em] text-slate-500">
                       {key.replace(/_/g, " ")}

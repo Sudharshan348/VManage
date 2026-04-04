@@ -5,6 +5,12 @@ export type StudentSignupInput = {
   phone: string;
   course: string;
   year: number;
+  sleepSchedule: number;
+  cleanliness: number;
+  socialBattery: number;
+  studyEnv: number;
+  bedPreference: "two" | "three" | "four" | "six";
+  acPreference: boolean;
   parentPhone?: string;
   address?: string;
   password: string;
@@ -37,6 +43,15 @@ export function validateStudentSignup(
   const phone = normalizeText(body.phone);
   const course = normalizeText(body.course);
   const year = Number(body.year);
+  const sleepSchedule = Number(body.sleepSchedule);
+  const cleanliness = Number(body.cleanliness);
+  const socialBattery = Number(body.socialBattery);
+  const studyEnv = Number(body.studyEnv);
+  const bedPreference = normalizeText(body.bedPreference) as StudentSignupPayload["bedPreference"];
+  const acPreference =
+    typeof body.acPreference === "boolean"
+      ? body.acPreference
+      : String(body.acPreference).toLowerCase() === "true";
   const parentPhone = normalizeText(body.parentPhone);
   const address = normalizeText(body.address);
   const password = normalizeText(body.password);
@@ -49,6 +64,21 @@ export function validateStudentSignup(
   if (course.length < 2) fieldErrors.course = "Course is required";
   if (!Number.isInteger(year) || year < 1 || year > 5) {
     fieldErrors.year = "Year must be between 1 and 5";
+  }
+  if (!Number.isInteger(sleepSchedule) || sleepSchedule < 1 || sleepSchedule > 5) {
+    fieldErrors.sleepSchedule = "Sleep schedule must be between 1 and 5";
+  }
+  if (!Number.isInteger(cleanliness) || cleanliness < 1 || cleanliness > 5) {
+    fieldErrors.cleanliness = "Cleanliness must be between 1 and 5";
+  }
+  if (!Number.isInteger(socialBattery) || socialBattery < 1 || socialBattery > 5) {
+    fieldErrors.socialBattery = "Social battery must be between 1 and 5";
+  }
+  if (!Number.isInteger(studyEnv) || studyEnv < 1 || studyEnv > 5) {
+    fieldErrors.studyEnv = "Study environment must be between 1 and 5";
+  }
+  if (!["two", "three", "four", "six"].includes(bedPreference)) {
+    fieldErrors.bedPreference = "Select a valid room size preference";
   }
   if (parentPhone && !phonePattern.test(parentPhone)) {
     fieldErrors.parentPhone = "Enter a valid parent phone number";
@@ -77,6 +107,12 @@ export function validateStudentSignup(
       phone,
       course,
       year,
+      sleepSchedule,
+      cleanliness,
+      socialBattery,
+      studyEnv,
+      bedPreference,
+      acPreference,
       ...(parentPhone ? { parentPhone } : {}),
       ...(address ? { address } : {}),
       password,

@@ -24,6 +24,12 @@ const initialForm: StudentSignupInput = {
   phone: "",
   course: "",
   year: 1,
+  sleepSchedule: 3,
+  cleanliness: 3,
+  socialBattery: 3,
+  studyEnv: 3,
+  bedPreference: "four",
+  acPreference: false,
   parentPhone: "",
   address: "",
   password: "",
@@ -150,6 +156,99 @@ export function AuthSignupForm() {
               required
             />
             {errors.year ? <p className="text-xs text-red-600">{errors.year}</p> : null}
+          </div>
+        </Field>
+        <Field label="Sleep schedule" hint="1 early, 5 late">
+          <div className="space-y-2">
+            <Input
+              type="number"
+              min={1}
+              max={5}
+              value={form.sleepSchedule}
+              onChange={(event) => updateField("sleepSchedule", Number(event.target.value) || 1)}
+              required
+            />
+            {errors.sleepSchedule ? (
+              <p className="text-xs text-red-600">{errors.sleepSchedule}</p>
+            ) : null}
+          </div>
+        </Field>
+        <Field label="Cleanliness" hint="1 flexible, 5 very neat">
+          <div className="space-y-2">
+            <Input
+              type="number"
+              min={1}
+              max={5}
+              value={form.cleanliness}
+              onChange={(event) => updateField("cleanliness", Number(event.target.value) || 1)}
+              required
+            />
+            {errors.cleanliness ? (
+              <p className="text-xs text-red-600">{errors.cleanliness}</p>
+            ) : null}
+          </div>
+        </Field>
+        <Field label="Social battery" hint="1 quiet, 5 social">
+          <div className="space-y-2">
+            <Input
+              type="number"
+              min={1}
+              max={5}
+              value={form.socialBattery}
+              onChange={(event) => updateField("socialBattery", Number(event.target.value) || 1)}
+              required
+            />
+            {errors.socialBattery ? (
+              <p className="text-xs text-red-600">{errors.socialBattery}</p>
+            ) : null}
+          </div>
+        </Field>
+        <Field label="Study environment" hint="1 silent, 5 active">
+          <div className="space-y-2">
+            <Input
+              type="number"
+              min={1}
+              max={5}
+              value={form.studyEnv}
+              onChange={(event) => updateField("studyEnv", Number(event.target.value) || 1)}
+              required
+            />
+            {errors.studyEnv ? (
+              <p className="text-xs text-red-600">{errors.studyEnv}</p>
+            ) : null}
+          </div>
+        </Field>
+        <Field label="Room size preference">
+          <div className="space-y-2">
+            <select
+              value={form.bedPreference}
+              onChange={(event) =>
+                updateField("bedPreference", event.target.value as StudentSignupInput["bedPreference"])
+              }
+              className="input-base"
+              required
+            >
+              <option value="two">2 sharing</option>
+              <option value="three">3 sharing</option>
+              <option value="four">4 sharing</option>
+              <option value="six">6 sharing</option>
+            </select>
+            {errors.bedPreference ? (
+              <p className="text-xs text-red-600">{errors.bedPreference}</p>
+            ) : null}
+          </div>
+        </Field>
+        <Field label="AC preference">
+          <div className="space-y-2">
+            <select
+              value={String(form.acPreference)}
+              onChange={(event) => updateField("acPreference", event.target.value === "true")}
+              className="input-base"
+              required
+            >
+              <option value="false">Non-AC</option>
+              <option value="true">AC</option>
+            </select>
           </div>
         </Field>
         <Field label="Parent phone" hint="Optional">

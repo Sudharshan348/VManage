@@ -1,10 +1,34 @@
 import { StudentRepository } from "@/lib/repositories/student";
 import { StudentSignupPayload } from "@/lib/validation/student";
 import { User } from "@/lib/models/user.model"; 
+import { RoommateProfile } from "@/lib/models/rommateprofile.model";
 import { ApiError } from "@/lib/util/apierror";
 import mongoose from "mongoose";
 
 export class StudentService {
+  static async ensureRoommateProfile(
+    studentId: mongoose.Types.ObjectId | string,
+    preferences?: Pick<
+      StudentSignupPayload,
+      "sleepSchedule" | "cleanliness" | "socialBattery" | "studyEnv" | "bedPreference" | "acPreference"
+    >
+  ) {
+    const existingProfile = await RoommateProfile.findOne({ studentId });
+    if (existingProfile) {
+      return existingProfile;
+    }
+
+    return RoommateProfile.create({
+      studentId,
+      sleepSchedule: preferences?.sleepSchedule ?? 3,
+      cleanliness: preferences?.cleanliness ?? 3,
+      socialBattery: preferences?.socialBattery ?? 3,
+      studyEnv: preferences?.studyEnv ?? 3,
+      bedPreference: preferences?.bedPreference ?? "four",
+      acPreference: preferences?.acPreference ?? false,
+    });
+  }
+
   static async createStudentProfile(data: StudentSignupPayload) {
     const existingRollNo = await StudentRepository.findByRollNo(data.rollNo);
     if (existingRollNo) {
@@ -51,6 +75,14 @@ export class StudentService {
       });
       user.studentId = newProfile._id as mongoose.Types.ObjectId;
       await user.save();
+      await StudentService.ensureRoommateProfile(newProfile._id, {
+        sleepSchedule: data.sleepSchedule,
+        cleanliness: data.cleanliness,
+        socialBattery: data.socialBattery,
+        studyEnv: data.studyEnv,
+        bedPreference: data.bedPreference,
+        acPreference: data.acPreference,
+      });
 
       return newProfile;
     } catch (error) {
