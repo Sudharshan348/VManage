@@ -1,14 +1,10 @@
 import { redirect } from "next/navigation";
-import type { ComponentProps } from "react";
 
-import { AdminDashboardClient } from "@/components/admin-dashboard-client";
-import { DashboardShell } from "@/components/dashboard-shell";
+import { AdminNoticeForm } from "@/components/admin-notice-form";
+import { DashboardShell, Panel } from "@/components/dashboard-shell";
 import { getCurrentUser } from "@/lib/auth";
 import connectDb from "@/lib/db/mongoose";
-import { MaintenanceTicket } from "@/lib/models/issue.model";
-import { Student } from "@/lib/models/student.model";
-import { User } from "@/lib/models/user.model";
-type TicketRow = ComponentProps<typeof AdminDashboardClient>["currentComplaints"][number];
+import { Notice } from "@/lib/models/notice.model";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
@@ -23,71 +19,41 @@ export default async function AdminPage() {
 
   await connectDb();
 
-  const [openComplaintDocs, urgentMaintenanceDocs] = await Promise.all([
-    MaintenanceTicket.find({ status: { $in: ["open", "in_progress"] } })
-      .sort({ createdAt: -1 })
-      .limit(8)
-      .lean(),
-    MaintenanceTicket.find({
-      priority: { $in: ["high", "urgent"] },
-      status: { $in: ["open", "in_progress"] },
-    })
-      .sort({ createdAt: -1 })
-      .limit(6)
-      .lean(),
-  ]);
-
-  const studentIds = Array.from(
-    new Set(
-      [...openComplaintDocs, ...urgentMaintenanceDocs].map((ticket) =>
-        String(ticket.studentId)
-      )
-    )
-  );
-
-  const studentDocs = await Student.find({ _id: { $in: studentIds } })
-    .select("userId rollNo")
+  const notices = await Notice.find()
+    .sort({ createdAt: -1 })
+    .limit(12)
     .lean();
-  const userIds = studentDocs.map((student) => student.userId).filter(Boolean);
-  const userDocs = await User.find({ _id: { $in: userIds } }).select("name").lean();
-
-  const userNameById = new Map(userDocs.map((item) => [String(item._id), item.name]));
-  const studentMetaById = new Map(
-    studentDocs.map((student) => [
-      String(student._id),
-      {
-        rollNo: student.rollNo,
-        name: userNameById.get(String(student.userId)) || "Student",
-      },
-    ])
-  );
-
-  const toTicketRows = (
-    tickets: typeof openComplaintDocs
-  ): TicketRow[] =>
-    tickets.map((ticket) => {
-      const meta = studentMetaById.get(String(ticket.studentId));
-      return {
-        _id: String(ticket._id),
-        title: ticket.title,
-        description: ticket.description,
-        category: ticket.category,
-        priority: ticket.priority,
-        status: ticket.status,
-        studentName: meta?.name || "Student",
-        studentRollNo: meta?.rollNo || "N/A",
-      };
-    });
-
-  const openComplaints = toTicketRows(openComplaintDocs);
-  const urgentMaintenance = toTicketRows(urgentMaintenanceDocs);
 
   return (
-    <DashboardShell title="Faculty workspace" role="admin" userName={user.name}>
-      <AdminDashboardClient
-        currentComplaints={openComplaints}
-        maintenanceIssues={urgentMaintenance}
-      />
+    <DashboardShell title="Post notice" role="admin" userName={user.name}>
+      <Panel title="Create a notice">
+        <AdminNoticeForm />
+      </Panel>
+
+      <Panel title="Recent notices">
+        {notices.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No notices posted yet.</p>
+        ) : (
+          <div className="space-y-3">
+            {notices.map((notice) => (
+              <article key={String(notice._id)} className="rounded border border-border bg-gray-50 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">{notice.title}</h3>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {new Date(notice.createdAt).toLocaleString("en-IN")}
+                    </p>
+                  </div>
+                  <span className="rounded bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+                    {notice.category}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">{notice.content}</p>
+              </article>
+            ))}
+          </div>
+        )}
+      </Panel>
     </DashboardShell>
   );
 }

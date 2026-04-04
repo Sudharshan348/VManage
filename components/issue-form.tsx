@@ -10,6 +10,10 @@ type IssueFormProps = {
   rollNo: string;
   phone: string;
   initialRoomNumber?: string;
+  initialTitle?: string;
+  initialDescription?: string;
+  initialCategory?: string;
+  initialPriority?: string;
 };
 
 export function IssueForm({
@@ -17,13 +21,17 @@ export function IssueForm({
   rollNo,
   phone,
   initialRoomNumber = "",
+  initialTitle = "",
+  initialDescription = "",
+  initialCategory = "electrical",
+  initialPriority = "medium",
 }: IssueFormProps) {
   const router = useRouter();
   const [roomNumber, setRoomNumber] = useState(initialRoomNumber);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("electrical");
-  const [priority, setPriority] = useState("medium");
+  const [title, setTitle] = useState(initialTitle);
+  const [description, setDescription] = useState(initialDescription);
+  const [category, setCategory] = useState(initialCategory);
+  const [priority, setPriority] = useState(initialPriority);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,8 +67,8 @@ export function IssueForm({
       setRoomNumber(initialRoomNumber);
       setTitle("");
       setDescription("");
-      setCategory("electrical");
-      setPriority("medium");
+      setCategory(initialCategory);
+      setPriority(initialPriority);
       setMessage(result.message || "Issue raised successfully");
       router.refresh();
     } catch {

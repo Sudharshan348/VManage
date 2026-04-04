@@ -6,7 +6,6 @@ import {
   Bell,
   Bot,
   ClipboardList,
-  Home,
   LogOut,
   Hotel,
   Cpu,
@@ -21,18 +20,17 @@ import { cn } from "@/lib/utils";
 const navConfig = {
   student: [
     { key: "student-profile", href: "/student", label: "Profile", icon: UserRound },
-    { key: "student-issues", href: "/issues", label: "Raise issue", icon: TriangleAlert },
+    { key: "student-issues", href: "/issues", label: "Your issues", icon: TriangleAlert },
     { key: "student-chat", href: "/chat", label: "AI chat", icon: Bot },
   ],
   admin: [
-    { key: "admin-overview", href: "/admin", label: "Overview", icon: Home },
+    { key: "admin-notices", href: "/admin", label: "Post notice", icon: Bell },
     { key: "admin-rooms", href: "/admin/room", label: "Rooms", icon: Hotel },
+    { key: "admin-complaints", href: "/admin/complaints", label: "Complaints", icon: ClipboardList },
     { key: "admin-maintenance-ai", href: "/admin/maintenance", label: "Maintenance AI", icon: Cpu },
     { key: "admin-roommates", href: "/admin/roommates", label: "Roommate match", icon: ScanSearch },
     { key: "admin-chat", href: "/chat", label: "AI chat", icon: Bot },
-    { key: "admin-notices", href: "/admin", label: "Post notice", icon: Bell },
-    { key: "admin-complaints", href: "/admin", label: "Current complaints", icon: ClipboardList },
-    { key: "admin-maintenance", href: "/admin", label: "Maintenance issues", icon: Users },
+    { key: "admin-maintenance", href: "/admin/maintenance", label: "Maintenance issues", icon: Users },
   ],
 } as const;
 

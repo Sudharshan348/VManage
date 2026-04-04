@@ -42,13 +42,12 @@ type AdminDashboardClientProps = {
   }>;
   maintenanceIssues: Array<{
     _id: string;
-    title: string;
-    description: string;
-    category: string;
-    priority: string;
+    assetIdentifier: string;
+    assetType: string;
+    riskScore: number;
     status: string;
-    studentName: string;
-    studentRollNo: string;
+    floorLevel: number;
+    createdAt: string;
   }>;
 };
 
@@ -81,6 +80,41 @@ function TicketList({
             <span className="bg-blue-100 text-blue-700 px-2 py-1 text-xs font-semibold rounded">{ticket.status}</span>
           </div>
           <p className="text-sm text-muted-foreground">{ticket.description}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function MaintenanceIssueList({
+  issues,
+}: {
+  issues: AdminDashboardClientProps["maintenanceIssues"];
+}) {
+  if (issues.length === 0) {
+    return <p className="text-sm text-muted-foreground">No fatal maintenance issues</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {issues.map((issue) => (
+        <article key={issue._id} className="rounded border border-red-100 bg-red-50 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h4 className="text-sm font-semibold text-foreground">
+                {issue.assetIdentifier} • {issue.assetType}
+              </h4>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Floor {issue.floorLevel} • {new Date(issue.createdAt).toLocaleDateString("en-IN")}
+              </p>
+            </div>
+            <span className="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-700">
+              {issue.riskScore.toFixed(2)}%
+            </span>
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground">
+            ML-flagged preventive maintenance issue. Current status: {issue.status}.
+          </p>
         </article>
       ))}
     </div>
@@ -208,7 +242,7 @@ export function AdminDashboardClient({
       </Panel>
 
       <Panel title="Maintenance issues">
-        <TicketList tickets={maintenanceIssues} emptyMessage="No urgent maintenance issues" />
+        <MaintenanceIssueList issues={maintenanceIssues} />
       </Panel>
     </div>
   );
