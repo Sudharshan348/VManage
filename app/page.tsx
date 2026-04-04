@@ -20,7 +20,7 @@ export default function HomePage() {
       <div className="bg-white border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl font-bold text-foreground mb-4">
-            Smart Dormitory Management System
+            Smart Hostel Management System
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Streamline your residence with intelligent room management, maintenance tracking, and AI-powered support. Manage your dorm experience effortlessly.
